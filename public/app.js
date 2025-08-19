@@ -304,16 +304,17 @@ async function connect(agentId) {
   setStatus('Connecting to ElevenLabs…');
   ws = new WebSocket(signedUrl);
 
-  ws.onopen = () => {
-    setStatus('Connected. Say something!');
-    ws.send(JSON.stringify({
-      type: "conversation_initiation_client_data",
-      conversation_config_override: {
-        agent: { first_message: "Hello from Lydia AI. How can I assist today?", language: "en" },
-        tts: { audio_format: "pcm_16000" }
-      }
-    }));
-  };
+ws.onopen = () => {
+  setStatus('Connected. Say something!');
+  // Do NOT override agent fields; just start the session.
+  // If you still want to request audio format, keep only TTS:
+  ws.send(JSON.stringify({
+    type: "conversation_initiation_client_data",
+    conversation_config_override: {
+      tts: { audio_format: "pcm_16000" } // this is generally allowed
+    }
+  }));
+};
 
   ws.onmessage = async (evt) => {
     let data; try { data = JSON.parse(evt.data); } catch { return; }
